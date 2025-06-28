@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import EventCard from "@/components/EventCard";
+import CreateEventForm from "@/components/CreateEventForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -37,10 +38,7 @@ export default function Events() {
                   Stay informed about community meetings and civic activities
                 </p>
               </div>
-              <Button className="bg-civic-blue hover:bg-blue-600 text-white">
-                <CalendarPlus className="h-4 w-4 mr-2" />
-                Create Event
-              </Button>
+              <CreateEventForm />
             </div>
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">

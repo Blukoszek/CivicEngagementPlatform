@@ -1,6 +1,8 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { newsService } from "./newsService";
+import { seedDatabase } from "./seedData";
 
 const app = express();
 app.use(express.json());
@@ -38,6 +40,12 @@ app.use((req, res, next) => {
 
 (async () => {
   const server = await registerRoutes(app);
+
+  // Start the news service to fetch real news articles
+  await newsService.startPeriodicFetch();
+
+  // Seed database with sample data
+  await seedDatabase();
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;

@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import PetitionCard from "@/components/PetitionCard";
+import CreatePetitionForm from "@/components/CreatePetitionForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -37,10 +38,7 @@ export default function Petitions() {
                   Take action on issues that matter to your community
                 </p>
               </div>
-              <Button className="bg-action-red hover:bg-red-700 text-white">
-                <Plus className="h-4 w-4 mr-2" />
-                Start Petition
-              </Button>
+              <CreatePetitionForm />
             </div>
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">

@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import ForumPost from "@/components/ForumPost";
+import CreatePostForm from "@/components/CreatePostForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -121,11 +122,14 @@ export default function Forums() {
 
             {/* Recent Posts */}
             <Card>
-              <CardHeader>
+              <CardHeader className="flex justify-between items-center">
                 <CardTitle className="flex items-center space-x-2">
                   <MessageSquare className="h-5 w-5 text-civic-blue" />
                   <span>Recent Discussions</span>
                 </CardTitle>
+                {locationForums && locationForums.length > 0 && (
+                  <CreatePostForm forumId={locationForums[0].id} />
+                )}
               </CardHeader>
               <CardContent className="space-y-4">
                 {recentPosts && recentPosts.length > 0 ? (
@@ -136,10 +140,9 @@ export default function Forums() {
                   <div className="text-center py-12">
                     <MessageSquare className="h-12 w-12 mx-auto mb-4 text-civic-gray-300" />
                     <p className="text-civic-gray-500 mb-4">No discussions yet. Be the first to start one!</p>
-                    <Button className="bg-community-green hover:bg-green-600 text-white">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Start Discussion
-                    </Button>
+                    {locationForums && locationForums.length > 0 && (
+                      <CreatePostForm forumId={locationForums[0].id} />
+                    )}
                   </div>
                 )}
               </CardContent>
