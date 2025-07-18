@@ -84,6 +84,316 @@ export interface IStorage {
   getUserEventStatus(eventId: number, userId: string): Promise<EventAttendee | undefined>;
 }
 
+// In-memory storage implementation for development
+export class MemStorage implements IStorage {
+  private users: Map<string, User> = new Map();
+  private forums: Map<number, Forum> = new Map();
+  private posts: Map<number, Post> = new Map();
+  private events: Map<number, Event> = new Map();
+  private petitions: Map<number, Petition> = new Map();
+  private representatives: Map<number, Representative> = new Map();
+  private newsArticles: Map<number, NewsArticle> = new Map();
+  private eventAttendees: Map<string, EventAttendee> = new Map();
+  private petitionSignatures: Map<string, PetitionSignature> = new Map();
+  private postVotes: Map<string, PostVote> = new Map();
+  private nextId = 1;
+
+  private getNextId(): number {
+    return this.nextId++;
+  }
+
+  // User operations
+  async getUser(id: string): Promise<User | undefined> {
+    return this.users.get(id);
+  }
+
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const existingUser = this.users.get(userData.id);
+    const user: User = {
+      ...userData,
+      createdAt: existingUser?.createdAt || new Date(),
+      updatedAt: new Date(),
+    };
+    this.users.set(userData.id, user);
+    return user;
+  }
+
+  // Forum operations
+  async getForums(): Promise<Forum[]> {
+    return Array.from(this.forums.values()).sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  async getForumsByType(type: string): Promise<Forum[]> {
+    return Array.from(this.forums.values())
+      .filter(forum => forum.type === type)
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  async getForumById(id: number): Promise<Forum | undefined> {
+    return this.forums.get(id);
+  }
+
+  async createForum(forum: InsertForum): Promise<Forum> {
+    const newForum: Forum = {
+      id: this.getNextId(),
+      ...forum,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.forums.set(newForum.id, newForum);
+    return newForum;
+  }
+
+  // Post operations
+  async getPostsByForum(forumId: number, limit = 50): Promise<Post[]> {
+    return Array.from(this.posts.values())
+      .filter(post => post.forumId === forumId && !post.parentId)
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice(0, limit);
+  }
+
+  async getPostById(id: number): Promise<Post | undefined> {
+    return this.posts.get(id);
+  }
+
+  async createPost(post: InsertPost): Promise<Post> {
+    const newPost: Post = {
+      id: this.getNextId(),
+      ...post,
+      upvotes: 0,
+      downvotes: 0,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.posts.set(newPost.id, newPost);
+    return newPost;
+  }
+
+  async updatePostVotes(postId: number, upvotes: number, downvotes: number): Promise<void> {
+    const post = this.posts.get(postId);
+    if (post) {
+      post.upvotes = upvotes;
+      post.downvotes = downvotes;
+      post.updatedAt = new Date();
+    }
+  }
+
+  async getPostReplies(parentId: number): Promise<Post[]> {
+    return Array.from(this.posts.values())
+      .filter(post => post.parentId === parentId)
+      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+  }
+
+  async searchPosts(query: string, limit = 20): Promise<Post[]> {
+    return Array.from(this.posts.values())
+      .filter(post => post.title.toLowerCase().includes(query.toLowerCase()))
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice(0, limit);
+  }
+
+  // Event operations
+  async getEvents(limit = 50): Promise<Event[]> {
+    return Array.from(this.events.values())
+      .sort((a, b) => b.startTime.getTime() - a.startTime.getTime())
+      .slice(0, limit);
+  }
+
+  async getUpcomingEvents(limit = 50): Promise<Event[]> {
+    const now = new Date();
+    return Array.from(this.events.values())
+      .filter(event => event.startTime > now)
+      .sort((a, b) => a.startTime.getTime() - b.startTime.getTime())
+      .slice(0, limit);
+  }
+
+  async getEventById(id: number): Promise<Event | undefined> {
+    return this.events.get(id);
+  }
+
+  async createEvent(event: InsertEvent): Promise<Event> {
+    const newEvent: Event = {
+      id: this.getNextId(),
+      ...event,
+      attendeeCount: 0,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.events.set(newEvent.id, newEvent);
+    return newEvent;
+  }
+
+  async getEventsByCategory(category: string): Promise<Event[]> {
+    return Array.from(this.events.values())
+      .filter(event => event.category === category)
+      .sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
+  }
+
+  // Petition operations
+  async getPetitions(limit = 50): Promise<Petition[]> {
+    return Array.from(this.petitions.values())
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice(0, limit);
+  }
+
+  async getActivePetitions(limit = 50): Promise<Petition[]> {
+    return Array.from(this.petitions.values())
+      .filter(petition => petition.status === 'active')
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice(0, limit);
+  }
+
+  async getPetitionById(id: number): Promise<Petition | undefined> {
+    return this.petitions.get(id);
+  }
+
+  async createPetition(petition: InsertPetition): Promise<Petition> {
+    const newPetition: Petition = {
+      id: this.getNextId(),
+      ...petition,
+      currentSignatures: 0,
+      status: 'active',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.petitions.set(newPetition.id, newPetition);
+    return newPetition;
+  }
+
+  async signPetition(petitionId: number, userId: string, comment?: string): Promise<void> {
+    const key = `${petitionId}-${userId}`;
+    const signature: PetitionSignature = {
+      petitionId,
+      userId,
+      comment: comment || null,
+      createdAt: new Date(),
+    };
+    this.petitionSignatures.set(key, signature);
+
+    // Update petition signature count
+    const petition = this.petitions.get(petitionId);
+    if (petition) {
+      petition.currentSignatures++;
+      petition.updatedAt = new Date();
+    }
+  }
+
+  // Representative operations
+  async getRepresentatives(): Promise<Representative[]> {
+    return Array.from(this.representatives.values())
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  async getRepresentativesByLevel(level: string): Promise<Representative[]> {
+    return Array.from(this.representatives.values())
+      .filter(rep => rep.level === level)
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  async createRepresentative(representative: InsertRepresentative): Promise<Representative> {
+    const newRep: Representative = {
+      id: this.getNextId(),
+      ...representative,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.representatives.set(newRep.id, newRep);
+    return newRep;
+  }
+
+  // News operations
+  async getNews(limit = 50): Promise<NewsArticle[]> {
+    return Array.from(this.newsArticles.values())
+      .sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime())
+      .slice(0, limit);
+  }
+
+  async getNewsByCategory(category: string, limit = 50): Promise<NewsArticle[]> {
+    return Array.from(this.newsArticles.values())
+      .filter(article => article.category === category)
+      .sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime())
+      .slice(0, limit);
+  }
+
+  async createNewsArticle(article: InsertNewsArticle): Promise<NewsArticle> {
+    const newArticle: NewsArticle = {
+      id: this.getNextId(),
+      ...article,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.newsArticles.set(newArticle.id, newArticle);
+    return newArticle;
+  }
+
+  // Vote operations
+  async voteOnPost(postId: number, userId: string, voteType: 'upvote' | 'downvote'): Promise<void> {
+    const key = `${postId}-${userId}`;
+    const existingVote = this.postVotes.get(key);
+    
+    if (existingVote) {
+      // Update existing vote
+      existingVote.voteType = voteType;
+      existingVote.updatedAt = new Date();
+    } else {
+      // Create new vote
+      const vote: PostVote = {
+        postId,
+        userId,
+        voteType,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      this.postVotes.set(key, vote);
+    }
+
+    // Update post vote counts
+    const post = this.posts.get(postId);
+    if (post) {
+      const votes = Array.from(this.postVotes.values()).filter(v => v.postId === postId);
+      post.upvotes = votes.filter(v => v.voteType === 'upvote').length;
+      post.downvotes = votes.filter(v => v.voteType === 'downvote').length;
+      post.updatedAt = new Date();
+    }
+  }
+
+  async getUserVoteOnPost(postId: number, userId: string): Promise<PostVote | undefined> {
+    const key = `${postId}-${userId}`;
+    return this.postVotes.get(key);
+  }
+
+  // Event attendance operations
+  async attendEvent(eventId: number, userId: string, status = 'attending'): Promise<void> {
+    const key = `${eventId}-${userId}`;
+    const attendee: EventAttendee = {
+      eventId,
+      userId,
+      status,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.eventAttendees.set(key, attendee);
+
+    // Update event attendee count
+    const event = this.events.get(eventId);
+    if (event) {
+      const attendees = Array.from(this.eventAttendees.values())
+        .filter(a => a.eventId === eventId && a.status === 'attending');
+      event.attendeeCount = attendees.length;
+      event.updatedAt = new Date();
+    }
+  }
+
+  async getEventAttendees(eventId: number): Promise<EventAttendee[]> {
+    return Array.from(this.eventAttendees.values())
+      .filter(attendee => attendee.eventId === eventId);
+  }
+
+  async getUserEventStatus(eventId: number, userId: string): Promise<EventAttendee | undefined> {
+    const key = `${eventId}-${userId}`;
+    return this.eventAttendees.get(key);
+  }
+}
+
 export class DatabaseStorage implements IStorage {
   // User operations (mandatory for Replit Auth)
   async getUser(id: string): Promise<User | undefined> {
@@ -371,4 +681,5 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-export const storage = new DatabaseStorage();
+// Temporarily using MemStorage due to database connection issues
+export const storage = new MemStorage();
