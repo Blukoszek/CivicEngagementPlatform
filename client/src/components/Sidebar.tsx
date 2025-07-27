@@ -10,19 +10,40 @@ import {
   UserCheck,
   Plus,
   CalendarPlus,
-  Bot
+  Bot,
+  Sparkles,
+  User,
+  Calculator,
+  Building2,
+  Share2,
+  Users,
+  Vote,
+  TrendingUp,
+  DollarSign
 } from "lucide-react";
 
 export default function Sidebar() {
   const [location] = useLocation();
 
-  const navigation = [
+  const coreNavigation = [
     { name: "Dashboard", href: "/", icon: Home },
     { name: "Forums", href: "/forums", icon: MessageSquare },
     { name: "Events", href: "/events", icon: Calendar },
     { name: "Local News", href: "/news", icon: FileText },
     { name: "Petitions", href: "/petitions", icon: FileSignature },
     { name: "Representatives", href: "/representatives", icon: UserCheck },
+  ];
+
+  const advancedNavigation = [
+    { name: "AI Recommendations", href: "/ai-recommendations", icon: Sparkles },
+    { name: "Profile", href: "/profile", icon: User },
+    { name: "Analytics", href: "/analytics", icon: TrendingUp },
+    { name: "Budget", href: "/budget", icon: DollarSign },
+    { name: "Voting Info", href: "/voting", icon: Vote },
+    { name: "Policy Simulation", href: "/policy-simulation", icon: Calculator },
+    { name: "Government Data", href: "/government-data", icon: Building2 },
+    { name: "Social Media", href: "/social-media", icon: Share2 },
+    { name: "Organizing", href: "/organizing", icon: Users },
   ];
 
   const isActive = (href: string) => {
@@ -32,16 +53,50 @@ export default function Sidebar() {
 
   return (
     <aside className="lg:w-64 space-y-6">
-      {/* Navigation Menu */}
+      {/* Core Navigation */}
       <Card>
-        <CardContent className="p-4">
-          <nav className="space-y-2">
-            {navigation.map((item) => {
+        <CardHeader>
+          <CardTitle className="text-sm text-gray-600">CORE FEATURES</CardTitle>
+        </CardHeader>
+        <CardContent className="p-4 pt-0">
+          <nav className="space-y-1">
+            {coreNavigation.map((item) => {
               const Icon = item.icon;
               return (
                 <Link key={item.name} href={item.href}>
                   <Button
                     variant={isActive(item.href) ? "default" : "ghost"}
+                    size="sm"
+                    className={`w-full justify-start ${
+                      isActive(item.href) 
+                        ? "bg-civic-blue text-white hover:bg-blue-600" 
+                        : "text-civic-gray-700 hover:bg-civic-gray-100"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4 mr-3" />
+                    {item.name}
+                  </Button>
+                </Link>
+              );
+            })}
+          </nav>
+        </CardContent>
+      </Card>
+
+      {/* Advanced Navigation */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm text-gray-600">ADVANCED TOOLS</CardTitle>
+        </CardHeader>
+        <CardContent className="p-4 pt-0">
+          <nav className="space-y-1">
+            {advancedNavigation.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link key={item.name} href={item.href}>
+                  <Button
+                    variant={isActive(item.href) ? "default" : "ghost"}
+                    size="sm"
                     className={`w-full justify-start ${
                       isActive(item.href) 
                         ? "bg-civic-blue text-white hover:bg-blue-600" 

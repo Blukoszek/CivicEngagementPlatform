@@ -2,6 +2,97 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Accessibility Features */
+.high-contrast {
+  --background: 0 0% 98%;
+  --foreground: 240 10% 3.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 240 10% 3.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 10% 3.9%;
+  --primary: 240 5.9% 10%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 240 4.8% 95.9%;
+  --secondary-foreground: 240 5.9% 10%;
+  --muted: 240 4.8% 95.9%;
+  --muted-foreground: 240 3.8% 46.1%;
+  --accent: 240 4.8% 95.9%;
+  --accent-foreground: 240 5.9% 10%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 5.9% 90%;
+  --input: 240 5.9% 90%;
+  --ring: 240 5.9% 10%;
+  --radius: 0.5rem;
+}
+
+.large-text {
+  font-size: var(--base-font-size, 16px) !important;
+}
+
+.large-text * {
+  font-size: inherit !important;
+}
+
+.reduced-motion {
+  transition: none !important;
+  animation: none !important;
+}
+
+.reduced-motion * {
+  transition: none !important;
+  animation: none !important;
+}
+
+.color-blind-protanopia {
+  filter: url('#protanopia-filter');
+}
+
+.color-blind-deuteranopia {
+  filter: url('#deuteranopia-filter');
+}
+
+.color-blind-tritanopia {
+  filter: url('#tritanopia-filter');
+}
+
+.simplified-mode .shadow-lg,
+.simplified-mode .shadow-md,
+.simplified-mode .shadow-sm {
+  box-shadow: none !important;
+}
+
+.simplified-mode .rounded-lg,
+.simplified-mode .rounded-md {
+  border-radius: 0.25rem !important;
+}
+
+/* Color blind filters */
+.color-blind-protanopia {
+  filter: 
+    saturate(0.7) 
+    contrast(1.2) 
+    sepia(0.1) 
+    hue-rotate(10deg);
+}
+
+.color-blind-deuteranopia {
+  filter: 
+    saturate(0.6) 
+    contrast(1.3) 
+    sepia(0.15) 
+    hue-rotate(-10deg);
+}
+
+.color-blind-tritanopia {
+  filter: 
+    saturate(0.8) 
+    contrast(1.1) 
+    sepia(0.05) 
+    hue-rotate(5deg) 
+    brightness(1.1);
+}
+
 :root {
   --background: hsl(0, 0%, 100%);
   --foreground: hsl(222, 84%, 4.9%);

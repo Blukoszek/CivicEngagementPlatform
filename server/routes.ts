@@ -770,6 +770,510 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // AI Recommendations routes
+  app.get("/api/ai/recommendations/:userId?", async (req, res) => {
+    try {
+      const recommendations = [
+        {
+          id: "rec-1",
+          type: "petition",
+          title: "Save the Downtown Library",
+          description: "Community petition to prevent library closure",
+          reason: "Based on your interest in education and community services, this petition aligns with your civic priorities",
+          relevanceScore: 0.92,
+          entityId: 1,
+          tags: ["Education", "Community Services", "Budget"],
+          actionText: "Sign Petition"
+        },
+        {
+          id: "rec-2", 
+          type: "event",
+          title: "Town Hall: Climate Action Plan",
+          description: "Public meeting to discuss new environmental initiatives",
+          reason: "You've previously engaged with environmental issues and attended similar civic meetings",
+          relevanceScore: 0.88,
+          entityId: 2,
+          tags: ["Environment", "Climate", "Town Hall"],
+          actionText: "RSVP to Event"
+        }
+      ];
+      res.json(recommendations);
+    } catch (error) {
+      console.error("Error fetching recommendations:", error);
+      res.status(500).json({ message: "Failed to fetch recommendations" });
+    }
+  });
+
+  app.get("/api/ai/user-interests/:userId?", async (req, res) => {
+    try {
+      const interests = ["Education", "Environment", "Transportation", "Housing", "Community Development"];
+      res.json(interests);
+    } catch (error) {
+      console.error("Error fetching user interests:", error);
+      res.status(500).json({ message: "Failed to fetch user interests" });
+    }
+  });
+
+  // User Profile routes
+  app.get("/api/users/profile/:userId?", async (req, res) => {
+    try {
+      const profile = {
+        id: "user-1",
+        name: "Community Member",
+        email: "user@example.com",
+        joinDate: "2024-01-15",
+        location: "Downtown District",
+        civicScore: 2450,
+        level: "Civic Champion",
+        badges: [
+          {
+            id: "badge-1",
+            name: "First Post",
+            description: "Created your first community post",
+            icon: "🎯",
+            earnedDate: "2024-02-01",
+            rarity: "common"
+          },
+          {
+            id: "badge-2",
+            name: "Event Organizer", 
+            description: "Organized a successful community event",
+            icon: "🎪",
+            earnedDate: "2024-05-15",
+            rarity: "rare"
+          }
+        ],
+        stats: {
+          postsCreated: 23,
+          eventsAttended: 8,
+          petitionsSigned: 12,
+          commentsPosted: 67,
+          votesReceived: 145,
+          daysActive: 89
+        },
+        recentActivity: [
+          {
+            id: "activity-1",
+            description: "Signed petition for community garden funding",
+            timestamp: "2024-07-26",
+            points: 50
+          },
+          {
+            id: "activity-2", 
+            description: "Attended City Council budget meeting",
+            timestamp: "2024-07-25",
+            points: 100
+          }
+        ],
+        impact: {
+          totalContributions: 156,
+          petitionsHelped: 8,
+          eventsOrganized: 3,
+          communitiesHelped: 2,
+          issuesAdvocated: ["Education", "Environment", "Transportation"]
+        }
+      };
+      res.json(profile);
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+      res.status(500).json({ message: "Failed to fetch user profile" });
+    }
+  });
+
+  // Policy Simulation routes
+  app.post("/api/policy/simulate", async (req, res) => {
+    try {
+      const { variables } = req.body;
+      
+      // Mock simulation results based on variables
+      const result = {
+        id: "sim-1",
+        scenario: "custom",
+        outcomes: {
+          economic: Math.floor(Math.random() * 40) + 60,
+          social: Math.floor(Math.random() * 40) + 60,
+          environmental: Math.floor(Math.random() * 40) + 60,
+          approval: Math.floor(Math.random() * 40) + 60
+        },
+        impacts: [
+          {
+            category: "Economic Impact",
+            description: "Projected changes in local business revenue and employment",
+            magnitude: 75,
+            timeframe: "medium-term",
+            affected_groups: ["Small Businesses", "Working Families", "Seniors"]
+          },
+          {
+            category: "Social Services",
+            description: "Impact on education, healthcare, and community programs",
+            magnitude: 68,
+            timeframe: "long-term",
+            affected_groups: ["Students", "Families", "Vulnerable Populations"]
+          }
+        ],
+        timeline: [
+          { year: 2025, budget: 45000000, jobs: 12500, population: 85000, satisfaction: 72 },
+          { year: 2026, budget: 47000000, jobs: 13100, population: 87500, satisfaction: 75 },
+          { year: 2027, budget: 49000000, jobs: 13800, population: 90000, satisfaction: 78 },
+          { year: 2028, budget: 51000000, jobs: 14200, population: 92000, satisfaction: 80 },
+          { year: 2029, budget: 53000000, jobs: 14800, population: 94500, satisfaction: 82 }
+        ],
+        risks: [
+          {
+            type: "Budget Shortfall",
+            description: "Risk of revenue not meeting projected expenses",
+            probability: 35,
+            severity: 65,
+            mitigation: "Implement gradual tax increases with economic growth monitoring"
+          }
+        ]
+      };
+      
+      res.json(result);
+    } catch (error) {
+      console.error("Error running policy simulation:", error);
+      res.status(500).json({ message: "Failed to run simulation" });
+    }
+  });
+
+  // Government Integration routes
+  app.get("/api/government/connections", async (req, res) => {
+    try {
+      const connections = [
+        {
+          id: "conn-1",
+          name: "City Budget API",
+          type: "Municipal Finance",
+          status: "connected",
+          lastSync: "2024-07-27",
+          dataPoints: 1250,
+          description: "Real-time access to city budget and spending data"
+        },
+        {
+          id: "conn-2",
+          name: "Legislative Tracker",
+          type: "Government Records",
+          status: "connected", 
+          lastSync: "2024-07-26",
+          dataPoints: 340,
+          description: "Track bills, voting records, and legislative activity"
+        },
+        {
+          id: "conn-3",
+          name: "Census Data Portal",
+          type: "Demographics",
+          status: "error",
+          lastSync: "2024-07-20",
+          dataPoints: 0,
+          description: "Population and demographic statistics"
+        }
+      ];
+      res.json(connections);
+    } catch (error) {
+      console.error("Error fetching government connections:", error);
+      res.status(500).json({ message: "Failed to fetch connections" });
+    }
+  });
+
+  app.get("/api/government/data", async (req, res) => {
+    try {
+      const data = [
+        {
+          id: "data-1",
+          source: "City Council",
+          type: "meeting",
+          title: "Monthly Budget Review Meeting",
+          description: "Review of Q3 budget performance and Q4 projections",
+          lastUpdated: "2024-07-25",
+          status: "scheduled",
+          url: "https://city.gov/meetings/budget-review"
+        },
+        {
+          id: "data-2",
+          source: "Planning Department",
+          type: "budget",
+          title: "Infrastructure Investment Plan",
+          description: "5-year infrastructure development and maintenance plan",
+          lastUpdated: "2024-07-24",
+          status: "active",
+          url: "https://city.gov/planning/infrastructure"
+        }
+      ];
+      res.json(data);
+    } catch (error) {
+      console.error("Error fetching government data:", error);
+      res.status(500).json({ message: "Failed to fetch government data" });
+    }
+  });
+
+  app.get("/api/government/legislation", async (req, res) => {
+    try {
+      const legislation = [
+        {
+          id: "bill-1",
+          billNumber: "CB-2024-15",
+          title: "Community Garden Expansion Act",
+          status: "Committee Review",
+          sponsor: "Councilwoman Rodriguez",
+          committee: "Parks and Recreation",
+          lastAction: "Referred to committee for review",
+          lastActionDate: "2024-07-20",
+          summary: "Legislation to allocate funding for new community gardens in underserved neighborhoods",
+          votingRecord: [
+            { representative: "Councilwoman Rodriguez", vote: "yes", party: "Democratic" },
+            { representative: "Councilman Thompson", vote: "yes", party: "Republican" },
+            { representative: "Councilwoman Kim", vote: "abstain", party: "Independent" }
+          ]
+        }
+      ];
+      res.json(legislation);
+    } catch (error) {
+      console.error("Error fetching legislation:", error);
+      res.status(500).json({ message: "Failed to fetch legislation" });
+    }
+  });
+
+  app.get("/api/government/budget", async (req, res) => {
+    try {
+      const budget = [
+        {
+          category: "Education",
+          allocated: 25000000,
+          spent: 18750000,
+          remaining: 6250000,
+          percentage: 75
+        },
+        {
+          category: "Infrastructure",
+          allocated: 15000000,
+          spent: 12000000,
+          remaining: 3000000,
+          percentage: 80
+        },
+        {
+          category: "Public Safety",
+          allocated: 20000000,
+          spent: 17500000,
+          remaining: 2500000,
+          percentage: 87.5
+        },
+        {
+          category: "Parks & Recreation",
+          allocated: 8000000,
+          spent: 5600000,
+          remaining: 2400000,
+          percentage: 70
+        }
+      ];
+      res.json(budget);
+    } catch (error) {
+      console.error("Error fetching budget data:", error);
+      res.status(500).json({ message: "Failed to fetch budget data" });
+    }
+  });
+
+  // Social Media Hub routes
+  app.get("/api/social/connections", async (req, res) => {
+    try {
+      const connections = [
+        {
+          platform: "twitter",
+          connected: true,
+          username: "civicconnect_community",
+          followers: 2450,
+          lastSync: "2024-07-27"
+        },
+        {
+          platform: "facebook", 
+          connected: true,
+          username: "CivicConnect Community",
+          followers: 1890,
+          lastSync: "2024-07-26"
+        },
+        {
+          platform: "linkedin",
+          connected: false
+        },
+        {
+          platform: "email",
+          connected: true,
+          followers: 3200,
+          lastSync: "2024-07-27"
+        }
+      ];
+      res.json(connections);
+    } catch (error) {
+      console.error("Error fetching social connections:", error);
+      res.status(500).json({ message: "Failed to fetch social connections" });
+    }
+  });
+
+  app.get("/api/social/posts", async (req, res) => {
+    try {
+      const posts = [
+        {
+          id: "post-1",
+          content: "Join us this Thursday for the Community Budget Meeting at City Hall. Your voice matters in shaping our city's future! #CivicEngagement #CommunityBudget",
+          platforms: ["twitter", "facebook"],
+          status: "published",
+          publishedDate: "2024-07-25",
+          metrics: {
+            views: 1250,
+            likes: 89,
+            shares: 23,
+            comments: 12
+          },
+          civicContent: {
+            type: "event",
+            entityId: "event-5",
+            title: "Community Budget Meeting"
+          }
+        }
+      ];
+      res.json(posts);
+    } catch (error) {
+      console.error("Error fetching social posts:", error);
+      res.status(500).json({ message: "Failed to fetch social posts" });
+    }
+  });
+
+  app.post("/api/social/publish", async (req, res) => {
+    try {
+      const { content, platforms, scheduledDate } = req.body;
+      
+      const post = {
+        id: `post-${Date.now()}`,
+        content,
+        platforms,
+        status: scheduledDate ? "scheduled" : "published",
+        scheduledDate,
+        publishedDate: scheduledDate ? undefined : new Date().toISOString()
+      };
+      
+      res.status(201).json(post);
+    } catch (error) {
+      console.error("Error publishing post:", error);
+      res.status(500).json({ message: "Failed to publish post" });
+    }
+  });
+
+  // Community Organizing routes
+  app.get("/api/organizing/campaigns", async (req, res) => {
+    try {
+      const campaigns = [
+        {
+          id: "campaign-1",
+          title: "Save Our Local Library",
+          description: "Community campaign to prevent the closure of the downtown branch library",
+          goal: "Secure funding for library operations and prevent closure",
+          status: "active",
+          progress: 75,
+          targetParticipants: 500,
+          currentParticipants: 375,
+          startDate: "2024-06-01",
+          organizer: "Friends of the Library Coalition",
+          tags: ["Education", "Community Services", "Advocacy"],
+          activities: [
+            {
+              id: "activity-1",
+              title: "Petition Drive at Farmers Market",
+              type: "outreach",
+              date: "2024-07-28",
+              description: "Collect signatures and raise awareness",
+              attendees: 25,
+              status: "scheduled"
+            }
+          ],
+          volunteers: []
+        }
+      ];
+      res.json(campaigns);
+    } catch (error) {
+      console.error("Error fetching campaigns:", error);
+      res.status(500).json({ message: "Failed to fetch campaigns" });
+    }
+  });
+
+  app.get("/api/organizing/volunteers", async (req, res) => {
+    try {
+      const volunteers = [
+        {
+          id: "vol-1",
+          name: "Sarah Johnson",
+          email: "sarah.j@email.com",
+          skills: ["Event Planning", "Social Media", "Graphic Design"],
+          availability: ["Weekends", "Evenings"],
+          role: "Outreach Coordinator",
+          joinDate: "2024-05-15",
+          hoursContributed: 32
+        },
+        {
+          id: "vol-2",
+          name: "Mike Chen",
+          email: "mike.chen@email.com", 
+          skills: ["Photography", "Writing", "Public Speaking"],
+          availability: ["Weekday Mornings", "Saturdays"],
+          role: "Communications Lead",
+          joinDate: "2024-06-02",
+          hoursContributed: 28
+        }
+      ];
+      res.json(volunteers);
+    } catch (error) {
+      console.error("Error fetching volunteers:", error);
+      res.status(500).json({ message: "Failed to fetch volunteers" });
+    }
+  });
+
+  app.get("/api/organizing/coalitions", async (req, res) => {
+    try {
+      const coalitions = [
+        {
+          id: "coalition-1",
+          name: "Environmental Action Alliance",
+          description: "Coalition of local organizations working on environmental issues and climate action",
+          members: 145,
+          organizations: ["Green Future", "Clean Air Coalition", "Sustainable Transport Group", "Urban Gardens Network"],
+          sharedGoals: ["Reduce carbon emissions by 30%", "Increase renewable energy adoption", "Expand public transportation"],
+          leadOrganization: "Green Future",
+          meetingSchedule: "First Thursday of each month",
+          nextMeeting: "2024-08-01"
+        }
+      ];
+      res.json(coalitions);
+    } catch (error) {
+      console.error("Error fetching coalitions:", error);
+      res.status(500).json({ message: "Failed to fetch coalitions" });
+    }
+  });
+
+  app.post("/api/organizing/campaigns", async (req, res) => {
+    try {
+      const { title, description, goal, targetParticipants } = req.body;
+      
+      const campaign = {
+        id: `campaign-${Date.now()}`,
+        title,
+        description,
+        goal,
+        status: "planning",
+        progress: 0,
+        targetParticipants,
+        currentParticipants: 1,
+        startDate: new Date().toISOString(),
+        organizer: "Current User",
+        tags: [],
+        activities: [],
+        volunteers: []
+      };
+      
+      res.status(201).json(campaign);
+    } catch (error) {
+      console.error("Error creating campaign:", error);
+      res.status(500).json({ message: "Failed to create campaign" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
