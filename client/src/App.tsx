@@ -12,6 +12,8 @@ import Events from "@/pages/events";
 import News from "@/pages/news";
 import Petitions from "@/pages/petitions";
 import Representatives from "@/pages/representatives";
+import Analytics from "@/pages/analytics";
+import Budget from "@/pages/budget";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -28,6 +30,8 @@ function Router() {
           <Route path="/news" component={News} />
           <Route path="/petitions" component={Petitions} />
           <Route path="/representatives" component={Representatives} />
+          <Route path="/analytics" component={Analytics} />
+          <Route path="/budget" component={Budget} />
         </>
       )}
       <Route component={NotFound} />

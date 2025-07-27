@@ -34,6 +34,10 @@ export const users = pgTable("users", {
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
   location: varchar("location"),
+  bio: text("bio"),
+  interests: text("interests").array(),
+  notificationPreferences: jsonb("notification_preferences"),
+  lastActive: timestamp("last_active"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -43,7 +47,12 @@ export const forums = pgTable("forums", {
   name: varchar("name", { length: 255 }).notNull(),
   description: text("description"),
   type: varchar("type", { length: 50 }).notNull(), // 'location' or 'topic'
+  location: varchar("location", { length: 255 }),
   parentId: integer("parent_id"),
+  tags: text("tags").array(),
+  memberCount: integer("member_count").default(0),
+  postCount: integer("post_count").default(0),
+  isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
